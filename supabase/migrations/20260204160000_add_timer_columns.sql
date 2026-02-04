@@ -1,0 +1,5 @@
+-- Add timer columns to tasks table
+
+ALTER TABLE tasks 
+ADD COLUMN IF NOT EXISTS started_at TIMESTAMPTZ DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS elapsed_time INTEGER DEFAULT 0;
