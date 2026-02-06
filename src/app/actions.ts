@@ -2,9 +2,11 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { Database } from '@/types/supabase'
+import { SupabaseClient } from '@supabase/supabase-js'
 
 export async function completeTask(taskId: string, actualTime: number) {
-    const supabase = await createClient()
+    const supabase = (await createClient()) as SupabaseClient<Database>
 
     const { error } = await supabase
         .from('tasks')
@@ -16,6 +18,7 @@ export async function completeTask(taskId: string, actualTime: number) {
         .eq('id', taskId)
 
     if (error) {
+        console.error('Task completion error:', error)
         throw new Error('Failed to complete task')
     }
 
@@ -23,11 +26,7 @@ export async function completeTask(taskId: string, actualTime: number) {
 }
 
 export async function moveTask(taskId: string, categoryId: string) {
-    const supabase = await createClient()
-
-    // We update category_id. 
-    // Optimization: If the master's category is ALREADY this category, we could set category_id to null?
-    // But simplest is just set it.
+    const supabase = (await createClient()) as SupabaseClient<Database>
 
     const { error } = await supabase
         .from('tasks')
