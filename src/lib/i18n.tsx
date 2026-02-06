@@ -116,7 +116,7 @@ const dictionaries: { [key in Language]: Dictionary } = {
         createNew: "新規作成...",
         edit: "編集",
         // Units
-        unit: "単位",
+
         page: "ページ",
         question: "問",
         set: "セット",
