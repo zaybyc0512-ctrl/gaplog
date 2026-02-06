@@ -122,14 +122,13 @@ const dictionaries: { [key in Language]: Dictionary } = {
         set: "セット",
         min: "分",
         // New Keys
-        inbox: "未整理",
-        folders: "フォルダ",
+
         noTasksInbox: "未整理のタスクはありません",
         empty: "(空)",
         estShort: "予測", // Est:
         amtShort: "量", // Amt:
         endOfSchedule: "予定終了",
-        approx: "約"
+
     }
 }
 
