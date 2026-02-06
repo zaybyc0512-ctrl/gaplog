@@ -22,7 +22,13 @@ import { useTranslation } from '@/lib/i18n'
 type Context = Database['public']['Tables']['contexts']['Row']
 type Category = Database['public']['Tables']['categories']['Row']
 type Master = Database['public']['Tables']['task_masters']['Row']
-type Task = Database['public']['Tables']['tasks']['Row'] & { unit?: string | null, context_id?: string | null }
+type Task = Database['public']['Tables']['tasks']['Row'] & {
+    unit?: string | null,
+    context_id?: string | null,
+    due_date?: string | null,
+    scheduled_start_time?: string | null,
+    scheduled_end_time?: string | null
+}
 
 interface DetailedTaskModalProps {
     task?: Task
@@ -54,6 +60,49 @@ export function DetailedTaskModal({ task, trigger }: DetailedTaskModalProps) {
 
     const [estimatedTime, setEstimatedTime] = useState<number>(task?.estimated_time || 0)
     const [isCalculating, setIsCalculating] = useState(false)
+
+    // Schedule State
+    const [isFixed, setIsFixed] = useState(!!task?.scheduled_start_time)
+    const [startTime, setStartTime] = useState(task?.scheduled_start_time || '')
+    const [endTime, setEndTime] = useState(task?.scheduled_end_time || '')
+    const [dueDate, setDueDate] = useState(task?.due_date || '')
+
+    // Sync state when task prop changes (important for re-opening modal or switching tasks)
+    useEffect(() => {
+        if (task) {
+            setTitle(task.title || '')
+            setAmount(task.amount || 1)
+            setUnit(task.unit || '')
+            setDifficulty(task.difficulty_level || 3)
+            setIsDraft(task.is_draft || false)
+            setEstimatedTime(task.estimated_time || 0)
+
+            // Chips/IDs
+            setSelectedContextId(task.context_id || '')
+            // Note: Category/Master might need inference if not present, but for edit mode, rely on what's there
+            // If Category is present but context set above, ensure consistency? 
+            // For now, raw sync:
+            if (task.category_id) setSelectedCategoryId(task.category_id)
+            if (task.master_id) setSelectedMasterId(task.master_id)
+
+            // Schedule
+            setIsFixed(!!task.scheduled_start_time)
+            setStartTime(task.scheduled_start_time || '')
+            setEndTime(task.scheduled_end_time || '')
+            setDueDate(task.due_date || '')
+        }
+    }, [task, open]) // Sync on open as well if task changes externally
+
+    // Auto-calc Estimate from Time Range
+    useEffect(() => {
+        if (isFixed && startTime && endTime) {
+            const start = new Date(`2000-01-01T${startTime}`)
+            const end = new Date(`2000-01-01T${endTime}`)
+            let diff = (end.getTime() - start.getTime()) / 60000
+            if (diff < 0) diff += 1440
+            if (diff > 0) setEstimatedTime(diff)
+        }
+    }, [isFixed, startTime, endTime])
 
     // Inline Create State
     const [isCreatingContext, setIsCreatingContext] = useState(false)
@@ -275,7 +324,10 @@ export function DetailedTaskModal({ task, trigger }: DetailedTaskModalProps) {
             unit,
             difficulty_level: difficulty,
             estimated_time: estimatedTime,
-            is_draft: isDraft
+            is_draft: isDraft,
+            due_date: dueDate || null,
+            scheduled_start_time: isFixed ? startTime || null : null,
+            scheduled_end_time: isFixed ? endTime || null : null
         }
 
         let error;
@@ -388,7 +440,7 @@ export function DetailedTaskModal({ task, trigger }: DetailedTaskModalProps) {
             </DialogTrigger>
             <DialogContent className="max-w-sm sm:max-w-md" onClick={(e) => e.stopPropagation()}>
                 <DialogHeader className="flex flex-row items-center justify-between pr-8">
-                    <DialogTitle>{task ? t('update') : t('detailed')}</DialogTitle>
+                    <DialogTitle>{task ? "詳細" : t('detailed')}</DialogTitle>
                     <Popover open={showHistory} onOpenChange={setShowHistory}>
                         <PopoverTrigger asChild>
                             <Button variant="ghost" size="icon" title="履歴から入力">
@@ -558,8 +610,34 @@ export function DetailedTaskModal({ task, trigger }: DetailedTaskModalProps) {
                         </div>
                     </div>
 
-                    {/* 6. Difficulty */}
-                    <div className="grid gap-3 pt-2">
+                    {/* 6. Schedule & Due Date */}
+                    <div className="grid gap-3 pt-2 border-t mt-2">
+                        <Label>スケジュール設定</Label>
+
+                        <div className="flex items-center justify-between space-x-2">
+                            <Label htmlFor="fixed-mode" className="flex flex-col space-y-1">
+                                <span>時間を指定する (固定)</span>
+                                <span className="font-normal text-xs text-muted-foreground">開始・終了時刻を決めると予測時間が自動計算されます</span>
+                            </Label>
+                            <Switch id="fixed-mode" checked={isFixed} onCheckedChange={setIsFixed} />
+                        </div>
+
+                        {isFixed && (
+                            <div className="flex gap-2 items-center bg-muted/30 p-2 rounded">
+                                <Input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className="bg-background" />
+                                <span>~</span>
+                                <Input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className="bg-background" />
+                            </div>
+                        )}
+
+                        <div className="grid gap-1">
+                            <Label>締切日</Label>
+                            <Input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
+                        </div>
+                    </div>
+
+                    {/* 7. Difficulty */}
+                    <div className="grid gap-3 pt-2 border-t mt-2">
                         <Label>{t('predictedDiff')}: {difficulty}</Label>
                         <Slider min={1} max={5} step={1} value={[difficulty]} onValueChange={(v) => setDifficulty(v[0])} />
                         <div className="flex justify-between text-xs text-muted-foreground px-1">
