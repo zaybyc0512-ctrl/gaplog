@@ -78,7 +78,7 @@ export function ReflectionView({ tasks }: ReflectionViewProps) {
                             </div>
                         </div>
                         <div className="flex-shrink-0">
-                            {getGapBadge(task.gap_score)}
+                            {getGapBadge(task.gap_score ?? null)}
                         </div>
                     </div>
                 </Card>
