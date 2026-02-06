@@ -31,7 +31,7 @@ export async function moveTask(taskId: string, categoryId: string) {
 
     const { error } = await supabase
         .from('tasks')
-        .update({ category_id: categoryId } as any) // Cast as any until types fully propagate if needed
+        .update({ category_id: categoryId })
         .eq('id', taskId)
 
     if (error) throw new Error('Failed to move task')

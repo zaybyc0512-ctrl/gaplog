@@ -95,6 +95,8 @@ export interface Database {
                     amount: number | null
                     category_id: string | null
                     actual_time: number | null
+                    scheduled_date: string | null
+                    display_order: number | null
                     created_at: string
                 }
                 Insert: {
@@ -112,6 +114,9 @@ export interface Database {
                     is_draft?: boolean | null
                     amount?: number | null
                     actual_time?: number | null
+                    scheduled_date?: string | null
+                    display_order?: number | null
+                    category_id?: string | null // Moved here to match Row order typically, or just append
                     created_at?: string
                 }
                 Update: {
@@ -129,6 +134,9 @@ export interface Database {
                     is_draft?: boolean | null
                     amount?: number | null
                     actual_time?: number | null
+                    scheduled_date?: string | null
+                    display_order?: number | null
+                    category_id?: string | null
                     created_at?: string
                 }
             }
