@@ -1,18 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
+// デバッグモード: 認証ロジックを一時的に完全に切り離す
 export async function middleware(request: NextRequest) {
-    // デバッグ用: 認証チェックをスキップして、すべてのアクセスを通す
     return NextResponse.next()
 }
 
 export const config = {
     matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         */
         '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 }
