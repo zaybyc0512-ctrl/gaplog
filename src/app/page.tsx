@@ -15,7 +15,7 @@ export default async function Home() {
     supabase.from('contexts').select('*').order('name'),
     supabase.from('categories').select('*').order('name'),
     supabase.from('task_masters').select('*').order('name'),
-    (supabase.from('daily_capacities').select('*').eq('user_id', user?.id).eq('date', todayStr).maybeSingle() as any)
+    (supabase.from('daily_capacities').select('*').eq('user_id', user?.id || '').eq('date', todayStr).maybeSingle() as any)
   ])
 
   const tasks = tasksRes.data || []
