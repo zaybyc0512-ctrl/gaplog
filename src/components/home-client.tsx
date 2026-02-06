@@ -21,6 +21,7 @@ import { CapacityIndicator } from '@/components/capacity-indicator'
 import { OrganizeButton } from '@/components/organize-button'
 import { ScheduleStackView } from '@/components/schedule-stack-view'
 import { ScheduleView } from '@/components/schedule-view'
+import { DonationWidget } from '@/components/donation-widget'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { format, isSameDay } from 'date-fns'
 import { ja } from 'date-fns/locale'
@@ -257,6 +258,8 @@ export function HomeClient({ tasks, contexts, categories, masters, dailyCapacity
                     </div>
                 </TabsContent>
             </Tabs>
+
+            <DonationWidget />
         </main >
     )
 }

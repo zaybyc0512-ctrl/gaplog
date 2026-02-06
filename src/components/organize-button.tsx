@@ -50,13 +50,13 @@ export function OrganizeButton({ tasks, userId }: OrganizeButtonProps) {
             onClick={handleOrganize}
             disabled={isLoading}
             className={`
-                gap-2 transition-all
+                gap-1 transition-all px-2
                 ${hasUnscheduled ? 'bg-amber-500 hover:bg-amber-600 text-white animate-pulse' : 'text-muted-foreground'}
             `}
             title="自動スケジューリング実行"
         >
             <Sparkles className="w-4 h-4" />
-            <span className="hidden sm:inline">スケジュールを整理</span>
+            <span className="text-xs font-bold">反映</span>
         </Button>
     )
 }
